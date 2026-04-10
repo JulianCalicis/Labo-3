@@ -1,4 +1,3 @@
-let timer;
 window.onload = () => {
   onTimerTick();
   init();
@@ -7,12 +6,9 @@ window.onload = () => {
  * Initialisation des éléments de la page.
  */
 function init() {
-  timer = setInterval(() => onTimerTick(), 1000);
+  setInterval(() => onTimerTick(), 1000);
   setTimeout(() => onTimePassed(), 5000);
 }
-/**
- *
- */
 function onTimerTick() {
   const dt = new Date();
   let date = new Intl.DateTimeFormat("fr-BE", {

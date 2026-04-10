@@ -1,0 +1,15 @@
+.letter-button:not(:disabled) {
+  cursor: pointer;
+}
+.letter-button:disabled {
+  pointer-events: none;
+}
+
+.letter-button.correct {
+  background-color: lightgreen;
+  color: green;
+}
+.letter-button.wrong {
+  background-color: pink;
+  color: red;
+}
