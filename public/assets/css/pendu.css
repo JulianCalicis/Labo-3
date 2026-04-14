@@ -1,15 +1,45 @@
-.letter-button:not(:disabled) {
+main {
+  place-content: start center;
+}
+#letter-button-menu {
+  display: flex;
+  gap: 0.25em;
+}
+.letter-button {
+  border: 1px solid hsla(from CurrentColor h s 25%);
+  border-radius: 0.25em;
+  min-width: 1.75em;
+  min-height: 1.75em;
+}
+button:not(:disabled) {
   cursor: pointer;
 }
 .letter-button:disabled {
+  opacity: 75%;
   pointer-events: none;
 }
 
 .letter-button.correct {
-  background-color: lightgreen;
-  color: green;
+  background-color: hsl(120, 100%, 80%);
+  color: hsl(120, 100%, 30%);
 }
 .letter-button.wrong {
-  background-color: pink;
-  color: red;
+  background-color: hsl(0, 100%, 80%);
+  color: hsl(0, 100%, 30%);
+}
+@keyframes buttonBlink {
+  60% {
+    outline-width: 1px;
+  }
+  80% {
+    outline-width: 5px;
+  }
+}
+button[type="reset"].active {
+  animation: buttonBlink 1s linear 0s infinite both alternate;
+  outline: 1px solid black;
+  border: 0;
+}
+button[type="reset"]:hover {
+  animation-play-state: paused;
 }

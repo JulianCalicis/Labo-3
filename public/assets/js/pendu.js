@@ -19,6 +19,8 @@ let selectedWord;
 let foundWord;
 /** Current failures of the player */
 let currentFailures;
+/** The state of the game */
+let isGameOver;
 //#endregion Values
 
 //#region Functions
@@ -27,12 +29,21 @@ function init() {
     .querySelector("button[type='reset']")
     .addEventListener("click", reset);
 
+  document.querySelector("#trouve").addEventListener("mouseover", (event) => {
+    event.target.innerHTML = "Double clic pour la réponse";
+  });
+  document.querySelector("#trouve").addEventListener("dblclick", (event) => {
+    event.target.innerHTML = selectedWord;
+  });
+  document.querySelector("#trouve").addEventListener("mouseout", (event) => {
+    event.target.innerHTML = foundWord;
+  });
+
   createButtons();
   reset();
 }
 function reset() {
-  toggleLetterButtons(false);
-  if (selectedWord !== undefined) {
+  if (selectedWord !== undefined && !isGameOver) {
     let message = "Abandon";
     if (currentFailures > 0) {
       message += ` après ${currentFailures} faute`;
@@ -44,7 +55,6 @@ function reset() {
   }
   selectedWord = selectRandomWord(AVAILABLE_WORDS);
   foundWord = Array(selectedWord.length).fill("_").join("");
-  // const matches = [...selectedWord.matchAll(/-|\s|\./g)];
   const matches = [
     ...removeAccents(selectedWord)
       .toUpperCase()
@@ -61,8 +71,8 @@ function reset() {
   onFoundWordChanged();
   currentFailures = 0;
   onCurrentTriesChanged();
-
-  // document.querySelector("p#triche").innerHTML = selectedWord;
+  isGameOver = false;
+  onGameOverChanged();
 }
 /** Selects a random word using Math.random and the current seconds to randomise more*/
 function selectRandomWord(mots) {
@@ -104,7 +114,7 @@ function getHangedMan(step) {
         " │        \r\n" +
         " │        \r\n" +
         " │        \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 2:
       hangedMan =
@@ -113,7 +123,7 @@ function getHangedMan(step) {
         " │        \r\n" +
         " │        \r\n" +
         " │        \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 3:
       hangedMan =
@@ -122,16 +132,16 @@ function getHangedMan(step) {
         " │     ╹  \r\n" +
         " │        \r\n" +
         " │        \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 4:
       hangedMan =
         " ┌─────┐  \r\n" +
         " │     ☺  \r\n" +
-        " │    ╼┛ \r\n" +
+        " │    ╼┛  \r\n" +
         " │        \r\n" +
         " │        \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 5:
       hangedMan =
@@ -140,7 +150,7 @@ function getHangedMan(step) {
         " │    ╼┻╾ \r\n" +
         " │        \r\n" +
         " │        \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 6:
       hangedMan =
@@ -149,7 +159,7 @@ function getHangedMan(step) {
         " │    ╼╋╾ \r\n" +
         " │     ╹  \r\n" +
         " │        \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 7:
       hangedMan =
@@ -158,7 +168,7 @@ function getHangedMan(step) {
         " │    ╼╋╾ \r\n" +
         " │    ╭┛  \r\n" +
         " │    ╯   \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 8:
       hangedMan =
@@ -167,7 +177,7 @@ function getHangedMan(step) {
         " │    ╼╋╾ \r\n" +
         " │    ╭┻╮ \r\n" +
         " │    ╯ ╰ \r\n" +
-        "╱│╲          ";
+        "╱│╲       ";
       break;
     case 9:
       hangedMan =
@@ -176,7 +186,7 @@ function getHangedMan(step) {
         " │    ╼╋╾ \r\n" +
         " │    ╭┻╮ \r\n" +
         " │    ╯ ╰ \r\n" +
-        "╱│╲   ╿╿╿    ";
+        "╱│╲   ╿╿╿ ";
       break;
     case 10:
       hangedMan =
@@ -185,7 +195,7 @@ function getHangedMan(step) {
         " │    ╼╋╾ \r\n" +
         " │    ╭┻╮ \r\n" +
         " │    ╯ ╰ \r\n" +
-        "╱│╲   ╿╿╿    ";
+        "╱│╲   ╿╿╿ ";
       break;
   }
   return hangedMan;
@@ -194,25 +204,18 @@ function replaceCharAt(string, index, char) {
   return string.substring(0, index) + char + string.substring(index + 1);
 }
 function checkWord(inputLetter) {
-  //TODO: comparer la lettre qu'on entre avec le mot sélectionné, si il est trouvé, on l'ajoute à l'affichage du mot, sinon, il avance d'une étape
-  //! TODO: S'occuper des accents
   const matches = [
     ...removeAccents(selectedWord)
       .toLowerCase()
       .matchAll(inputLetter.toLowerCase()),
   ];
   if (matches.length > 0) {
-    //TODO: Ajouter les lettres à l'affichage
-    // alert("trouvé");
     for (const match of matches) {
       foundWord = replaceCharAt(
         foundWord,
         match.index,
         selectedWord[match.index],
       );
-      // foundWord.substring(0, match.index) +
-      // selectedWord[match.index] +
-      // foundWord.substring(match.index + 1);
       onFoundWordChanged();
     }
   } else {
@@ -235,7 +238,6 @@ function areIdentficalNoCaseNoAccents(string1, string2) {
 function toggleLetterButtons(disableButtons) {
   for (const letterButton of letterButtons) {
     letterButton.disabled = disableButtons;
-    // letterButton.style.pointerEvents = disableButtons ? "none" : "auto";
     if (!disableButtons) letterButton.classList.remove("correct", "wrong");
   }
 }
@@ -246,6 +248,7 @@ function showAnswer(reason) {
 window.onload = () => {
   init();
 };
+
 function onFoundWordChanged() {
   document.querySelector("p#trouve").innerHTML = foundWord;
 }
@@ -259,25 +262,30 @@ function updateHangedMan(hangedManString) {
 }
 function onLetterButtonClick(event) {
   event.currentTarget.disabled = true;
-  // event.currentTarget.style.pointerEvents = "none";
   const inputLetter = event.currentTarget.textContent;
   const hasMatch = checkWord(inputLetter);
   event.currentTarget.classList.add(hasMatch ? "correct" : "wrong");
-  // event.currentTarget.style.backgroundColor = hasMatch ? "lightgreen" : "pink";
-  // event.currentTarget.style.color = hasMatch ? "green" : "red";
 
-  //TODO: Vérifier si l'utilisateur peut encore jouer, si il gagne ou il perd
   if (currentFailures >= MAX_TRIES) {
     showAnswer("Défaite");
-
-    //TODO: Désactiver les boutons
-    toggleLetterButtons(true);
+    isGameOver = true;
+    onGameOverChanged();
   } else if (areIdentficalNoCaseNoAccents(foundWord, selectedWord)) {
     alert("victoire");
-    toggleLetterButtons(true);
-    //TODO: Désactiver les boutons
+    isGameOver = true;
+    onGameOverChanged();
   } else {
     //Jouer encore
+  }
+}
+function onGameOverChanged() {
+  const resetButton = document.querySelector("button[type=reset]");
+  if (isGameOver) {
+    resetButton.classList.add("active");
+    toggleLetterButtons(true);
+  } else {
+    resetButton.classList.remove("active");
+    toggleLetterButtons(false);
   }
 }
 //#endregion Events

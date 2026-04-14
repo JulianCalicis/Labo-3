@@ -13,26 +13,29 @@ h3 {
   font-family: "Silkscreen", sans-serif;
 }
 body {
-  min-height: 100vh;
-  background: hsl(from var(--accent-color) h 100% 95%);
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   grid-template-areas: "header" "nav" "main" "footer";
+  background: hsl(from var(--accent-color) h 100% 95%);
+  min-height: 100vh;
 }
 body * {
   transition: all 300ms;
 }
 main {
-  grid-area: main;
   display: grid;
+  grid-area: main;
   place-items: center;
 }
 footer {
   grid-area: footer;
+  height: 3em;
   min-height: 5vh;
 }
 .text-unselectable {
   user-select: none;
   -webkit-user-select: none;
 }
-
+menu {
+  padding: 0;
+}
