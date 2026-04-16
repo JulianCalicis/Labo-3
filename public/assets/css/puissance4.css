@@ -1,0 +1,21 @@
+table {
+  --TD-SIZE: min(calc(100vw / var(--COLUMNS)), calc(100vh / var(--ROWS)));
+  display: grid;
+  border-collapse: collapse;
+  grid-template-columns: repeat(var(--COLUMNS), var(--TD-SIZE));
+  grid-template-rows: repeat(var(--ROWS), var(--TD-SIZE));
+}
+tbody,
+tr {
+  display: contents;
+}
+td {
+  border: 1px solid black;
+  min-width: 1em;
+  min-height: 1em;
+  pointer-events: none;
+}
+td.empty {
+  pointer-events: auto;
+  cursor: pointer;
+}
